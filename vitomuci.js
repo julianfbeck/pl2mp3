@@ -557,7 +557,7 @@ function downloadAudio(path, url) {
 
 
 module.exports = vitomuci;
-//export mehtods for testing
+//export methods for testing
 vitomuci.checkffmpeg = checkffmpeg;
 vitomuci.checkffmpeg = checkffmpeg;
 vitomuci.downloadVideo = downloadVideo;
