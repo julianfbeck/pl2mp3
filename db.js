@@ -6,7 +6,7 @@ const path = require("upath")
 let db
 let adapter
 
-function init(dbPath){
+function init(dbPath) {
 	adapter = new FileSync(dbPath);
 	db = low(adapter);
 
@@ -51,15 +51,20 @@ async function checkforNewVideos(playlist) {
 		link: playlist
 	}).get("videos").value()
 
-	let listInfo = await pl.getPlaylistInformation(playlist.link, 9999);
+	let listInfo = await pl.getPlaylistInformation(playlist, 9999);
 	let newVideos = listInfo.items.map(obj => {
 		return obj.url
 	})
 	return newVideos.filter(v => {
 		return !dlVideos.includes(v);
 	})
-
 }
-module.exports.checkVideos=checkforNewVideos;
+async function getPlaylistPath(base, playlist) {
+	return path.join(base, db.get("playlists").find({
+		link: playlist
+	}).get("title").value())
+}
+module.exports.checkVideos = checkforNewVideos;
 module.exports.prepare = prepare;
 module.exports.init = init;
+module.exports.getPlaylistPath = getPlaylistPath;

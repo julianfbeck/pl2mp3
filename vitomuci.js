@@ -539,20 +539,8 @@ function getRSS(url) {
     });
 }
 
-/**
- * 
- * @param {String} path and name where the download should be stored
- * @param {String} url to the podcast
- */
-function downloadAudio(path, url) {
-    return new Promise((resolve, reject) => {
-        request(url).pipe(fs.createWriteStream(path)).on('finish', function () {
-            resolve(path)
-        }).on('error', function (error) {
-            reject(error);
-        });
-    });
-}
+
+
 
 
 
