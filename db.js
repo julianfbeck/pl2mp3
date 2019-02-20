@@ -1,17 +1,21 @@
 const low = require("lowdb");
 const FileSync = require("lowdb/adapters/FileSync");
 const fs = require("fs");
-const adapter = new FileSync("test/db.json");
-const db = low(adapter);
 const pl = require("./playlist");
 const path = require("upath")
-let rawdata = fs.readFileSync("test/config.json");
-let config = JSON.parse(rawdata);
+let db
+let adapter
 
+function init(dbPath){
+	adapter = new FileSync(dbPath);
+	db = low(adapter);
+
+
+}
 /**
  * check database and folders
  */
-async function init() {
+async function prepare(config) {
 	//check if playlist exisitstiert
 	if (!db.has("playlists").value()) db.set("playlists", []).write();
 	//check if there is a object for each array
@@ -56,9 +60,6 @@ async function checkforNewVideos(playlist) {
 	})
 
 }
-
-
-(async () => {
-	await init();
-	await checkforNewVideos()
-})();
+module.exports.checkVideos=checkforNewVideos;
+module.exports.prepare = prepare;
+module.exports.init = init;
