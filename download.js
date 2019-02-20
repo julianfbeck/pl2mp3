@@ -8,6 +8,8 @@ const ytdl = require("ytdl-core");
 const isUrl = require("is-url");
 const chalk = require("chalk");
 const ora = require("ora");
+const sanitize = require("sanitize-filename");
+
 
 let ffmetadata;
 
@@ -26,30 +28,23 @@ async function download(dir, config, ytVideo) {
 
 	//set default value when calling as a module
 	options = Object.assign({
-		startAt: 0,
-		endAt: 0,
 		duration: 180,
 		full: true,
 	}, config);
 
 	//parse time stamps to seconds
-	options.startAt = stringToSeconds(options.startAt);
-	options.endAt = stringToSeconds(options.endAt);
 	options.duration = stringToSeconds(options.duration);
 
 	//sets path variables for ffmpeg
 	await checkffmpeg();
 
 	//Download yt videos
-
-
 	if (ytdl.validateURL(ytVideo)) {
-		let title = await getVideoTitle(video);
-		title = title.replace(/[/\\?%*:|"<>&]/g, "-"); //make sure there are no illeagale characters
-		await downloadVideo(video, path.join(youtubeDir, title + ".mp4"));
-		i++;
+		let title = await getVideoTitle(ytVideo);
+		title = sanitize(title) //make sure there are no illeagale characters
+		await downloadVideo(ytVideo, path.join(directory, title + ".mp4"));
 	}
-
+    return
 
 
 

@@ -23,7 +23,7 @@ async function update() {
 		let playlistDir = await db.getPlaylistPath(basePath, playlist.link)
 
 		for (const video of toDownload) {
-			let result = dl.download(playlistDir, playlist, video)
+			let result = await dl.download(playlistDir, playlist, video)
 			db.addVideo(playlist.link, video)
 		}
 	}
