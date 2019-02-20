@@ -5,63 +5,44 @@ const ffmpeg = require("fluent-ffmpeg");
 const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
 const ffprobePath = require("@ffprobe-installer/ffprobe").path;
 const ytdl = require("ytdl-core");
-const ytlist = require("youtube-playlist");
 const isUrl = require("is-url");
-const glob = require("glob");
-const fileExists = require("file-exists");
 const chalk = require("chalk");
-const clear = require("clear");
-const figlet = require("figlet");
 const ora = require("ora");
-const request = require('request');
-const parsePodcast = require('node-podcast-parser');
 
 let ffmetadata;
 
-let videoFormats = [".mp3", ".mkv", ".mp4", ".avi", ".wmv", ".mov", ".amv", ".mpg", ".flv"];
 let directory;
-let processArgv;
 let options;
 
 /**
- * Vitomuci
+ * download
  * @param {String} dir directory, file, file with regex, or youtube url
  * @param {*} op  options
- * @param {*} process pass process variable, only needed for cli.js
  */
-async function vitomuci(dir, op, process) {
+async function download(dir, config, ytVideo) {
 
     if (typeof dir == undefined) throw "please specify an directory";
     directory = dir;
-    processArgv = process || [0, 0, dir]; //gets set when calling as a module
 
     //set default value when calling as a module
     options = Object.assign({
-        name: "",
         startAt: 0,
         endAt: 0,
         duration: 180,
-        cover: false,
-        rename: false,
-        metadata: false,
-        full: false,
-        podcastLimit: 0
-    }, op);
+        full: true,
+    }, config);
 
     //parse time stamps to seconds
     options.startAt = stringToSeconds(options.startAt);
     options.endAt = stringToSeconds(options.endAt);
     options.duration = stringToSeconds(options.duration);
 
-    clear();
     //sets path variables for ffmpeg
     await checkffmpeg();
 
     //Download yt videos
-    if (isUrl(directory)) {
-        const urlSpinner = ora(`Detected ${chalk.blue(directory)} as url`).start();
+    if (isUrl(ytVideo)) {
 
-        if (typeof options.output === "undefined") throw "please specify an output folder vitomuci: <yt url> <output folder>";
         if (directory.indexOf("https://www.youtube.com/") >= 0) {
             let youtubeDir = path.join(options.output, "YouTube");
             //run get playlist
@@ -379,4 +360,4 @@ async function getVideoTitle(url) {
 }
 
 
-module.exports.getVideoTitle = getVideoTitle;
+module.exports.download = download;

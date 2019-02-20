@@ -9,8 +9,6 @@ let adapter
 function init(dbPath) {
 	adapter = new FileSync(dbPath);
 	db = low(adapter);
-
-
 }
 /**
  * check database and folders
@@ -64,7 +62,12 @@ async function getPlaylistPath(base, playlist) {
 		link: playlist
 	}).get("title").value())
 }
+async function addVideo(playlist,link){
+	db.get("playlists").find({link: playlist})
+		.get("videos").push("link")
+}
 module.exports.checkVideos = checkforNewVideos;
 module.exports.prepare = prepare;
 module.exports.init = init;
 module.exports.getPlaylistPath = getPlaylistPath;
+module.exports.addVideo = addVideo

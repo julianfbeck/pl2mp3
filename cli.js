@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const program = require("commander");
-const vt = require("./vitomuci");
+const dl = require("./download");
 const chalk = require("chalk");
 const notifier = require('node-notifier');
 const interactive = require("./interactive");
@@ -20,10 +20,11 @@ async function update() {
 	 */
 	for (const playlist of config.playlists) {
 		let toDownload = await db.checkVideos(playlist.link)
-        let playlistPath = await db.getPlaylistPath(basePath, playlist.link)
-        
-		for (const video of playlistPath) {
-            
+		let playlistDir = await db.getPlaylistPath(basePath, playlist.link)
+
+		for (const video of toDownload) {
+			let result = dl.download(playlistDir, playlist, video)
+			db.addVideo(playlist.link, video)
 		}
 	}
 }
