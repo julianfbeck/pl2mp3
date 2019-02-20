@@ -54,13 +54,6 @@ async function vitomuci(dir, op, process) {
     options.duration = stringToSeconds(options.duration);
 
     clear();
-    console.log(
-        chalk.blue(
-            figlet.textSync("VITOMUCI", {
-                horizontalLayout: "full"
-            })
-        )
-    );
     //sets path variables for ffmpeg
     await checkffmpeg();
 
@@ -176,7 +169,6 @@ async function vitomuci(dir, op, process) {
     }
 
     if (options.cover) await deleteFile(coverPath);
-
 }
 
 
@@ -193,77 +185,6 @@ function checkffmpeg() {
     console.log(chalk.grey("ffmpeg installed at:" + ffmpegPath));
     return ffmpegPath;
 }
-
-
-
-/**
- * Searches for files inside input,
- * or search for matching files if a regex
- * gets inputed
- * @param {String} input directory or file
- * @returns {Promise} array with files
- */
-function getFiles(input) {
-    try {
-
-        //cli supports regex matching
-        if (!isUrl(processArgv[2]) && fileExists.sync(directory)) {
-            let files = [];
-            let foundFiles = false;
-            for (let i = 2; i < processArgv.length; i++) {
-                if (fileExists.sync(processArgv[i])) {
-                    files.push(processArgv[i]);
-                    foundFiles = true;
-                }
-            }
-            if (foundFiles) {
-                return files;
-            }
-        }
-        //directory
-        if (fs.lstatSync(input).isDirectory()) {
-            let files = [];
-            fs.readdirSync(input).forEach(file => {
-                let stats = fs.statSync(path.join(input, file));
-                if (stats.isFile())
-                    files.push(path.join(input, file));
-            });
-            return (files.sort());
-        }
-        throw "no dir"
-    } catch (error) {
-        //falls back here if cli doesnt supports regex matching
-        //remove brackets
-        let removeB = "";
-        for (let i = 0; i < input.length; i++) {
-            if (input.charAt(i) == "[") {
-                removeB = removeB.concat("[[]");
-            } else if (input.charAt(i) == "]") {
-                removeB = removeB.concat("[]]");
-            } else {
-                removeB = removeB.concat(input.charAt(i));
-            }
-        }
-        //return glob search
-        return glob.sync(removeB);
-    }
-}
-
-/**
- * Checks if found files are media files
- * @param {Array} files array of files
- */
-function verifyFiles(files) {
-    let mediaFiles = [];
-    files.forEach(file => {
-        if (videoFormats.includes(path.extname(file))) {
-            //mediaFiles.push(upath.normalize(file));
-            mediaFiles.push(file);
-        }
-    });
-    return mediaFiles;
-}
-
 
 /**
  * Extracts one clip out of a longer mp3 file using the 
@@ -412,32 +333,6 @@ function writeMusicMetadata(file, compilationName, cover) {
     });
 }
 
-
-/**
- * Takes a picture from a media file and saves it as
- * cover.jpg used to generate a cover
- * @param {String} file 
- * @param {String} baseDirectory 
- * @param {String} picTime 
- */
-function getCoverPicture(file, baseDirectory, picTime) {
-    const coverPicture = ora(`took cover picture from ${chalk.blue(file)} at ${chalk.blue(picTime)}`).start();
-    return new Promise((resolve, reject) => {
-        ffmpeg(file)
-            .screenshots({
-                timestamps: [picTime],
-                filename: path.join(baseDirectory, "cover.jpg"),
-                size: "320x240"
-            }).on("end", function (stdout, stderr) {
-                coverPicture.succeed(`took cover picture from ${chalk.blue(file)} at ${chalk.blue(picTime)}`);
-                resolve(path.join(baseDirectory, "cover.jpg"));
-            }).on('error', function (err, stdout, stderr) {
-                coverPicture.fail(chalk.red(err.message));
-            });;
-    });
-};
-
-
 /**
  * Promise wrap for deleting a file
  * @param {*} file 
@@ -453,28 +348,6 @@ function deleteFile(file) {
     });
 }
 
-
-/**
- * Cleans up the filename of the given files
- * Removes Brackets and the text inside them
- * @param {Array} files 
- */
-function rename(files) {
-    const spinner = ora(`renaming files...`).start();
-
-    let renamedFiles = [];
-    files.forEach(function (file) {
-        let basename = path.basename(file);
-        let curDir = path.dirname(file)
-        let removeRound = basename.replace(/ *\([^)]*\) */g, "");
-        let removeSquare = removeRound.replace(/ *\[[^)]*\] */g, "");
-        let newName = path.join(curDir, removeSquare);
-        renamedFiles.push(newName);
-        fs.renameSync(file, newName);
-    });
-    spinner.succeed(`renamed ${chalk.blue(renamedFiles.length)} files.`);
-    return renamedFiles;
-}
 
 
 /**
@@ -493,19 +366,6 @@ async function downloadVideo(url, dir) {
 
 
 /**
- * Returns array of links if url is a playlist
- * @param {String} url of the youtube video 
- */
-async function getPlaylist(url) {
-    return new Promise((resolve, reject) => {
-        ytlist(url, "url").then(res => {
-            resolve(res.data.playlist);
-        });
-    });
-}
-
-
-/**
  * Gets the title of a video
  * @param {} url 
  */
@@ -519,40 +379,4 @@ async function getVideoTitle(url) {
 }
 
 
-/**
- * 
- * @param {String} url to the rss feed  
- */
-function getRSS(url) {
-    return new Promise((resolve, reject) => {
-        request(url, (err, res, data) => {
-            if (err)
-                reject('Network error', err);
-
-            parsePodcast(data, (err, data) => {
-                if (err)
-                    reject('Parsing error', err);
-
-                resolve(data);
-            });
-        });
-    });
-}
-
-
-
-
-
-
-module.exports = vitomuci;
-//export methods for testing
-vitomuci.checkffmpeg = checkffmpeg;
-vitomuci.checkffmpeg = checkffmpeg;
-vitomuci.downloadVideo = downloadVideo;
-vitomuci.rename = rename;
-vitomuci.getVideoTitle = getVideoTitle;
-vitomuci.stringToSeconds = stringToSeconds;
-vitomuci.secondsToTimeString = secondsToTimeString;
-vitomuci.downloadVideo = downloadVideo;
-vitomuci.getVideoTitle = getVideoTitle;
-vitomuci.getPlaylist = getPlaylist;
+module.exports.getVideoTitle = getVideoTitle;
