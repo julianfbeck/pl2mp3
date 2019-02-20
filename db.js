@@ -13,7 +13,8 @@ if(!db.has("playlists").value())
   db.set('playlists', []).write()
 //check if there is a object for each array
 for (const playlist of config.playlists) {
-  //playlist dosnt exists
-  if(db.get("playlists").find({name:playlist.name}).isEmpty().value()){
+  //playlist doesnt exist
+  if(db.get("playlists").find({link:playlist.link}).isEmpty().value()){
+    db.get("playlists").push({link:playlist.link,videos:[]}).write()
   }
 }
