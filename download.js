@@ -5,14 +5,11 @@ const ffmpeg = require("fluent-ffmpeg");
 const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
 const ffprobePath = require("@ffprobe-installer/ffprobe").path;
 const ytdl = require("ytdl-core");
-const isUrl = require("is-url");
 const chalk = require("chalk");
-const ora = require("ora");
 const sanitize = require("sanitize-filename");
 
 
 let ffmetadata;
-
 let directory;
 let options;
 
@@ -29,7 +26,8 @@ async function download(dir, config, ytVideo) {
 	//set default value when calling as a module
 	options = Object.assign({
 		duration: 180,
-		full: true,
+        full: true,
+        metadata:true
 	}, config);
 
 	//parse time stamps to seconds
@@ -48,7 +46,7 @@ async function download(dir, config, ytVideo) {
 
 	//Split track
 	let seconds = await getFileLength(videoPath);
-	await splitTrack(videoPath, directory, Number(seconds));
+	let files = await splitTrack(videoPath, directory, Number(seconds));
 	
 	//updating meta data
 	if (options.metadata) {
@@ -105,26 +103,31 @@ function segmentMp3(input, output, start, duration) {
  * @param {Number} duration 
  */
 async function splitTrack(videoPath, directory, duration){
-
+    let ext = path.extname(videoPath);
+    let name = path.removeExt(path.basename(videoPath), ext);
+    let files =[]
 	//if you dont want seprate clips
 	if (options.full) {
-        console.log("full")
-		let ext = path.extname(videoPath);
-		let newName = path.removeExt(path.basename(videoPath), ext);
-		await segmentMp3(path.join(videoPath), path.join(directory, newName + ".mp3"), 0, duration);
-		return;
+        let newName = path.join(directory, sanitize(name) + ".mp3")
+        await segmentMp3(videoPath, newName, 0, duration);
+        files.push(newName)
+		return files;
 	}
 
 	let durationIndex = 0;
 
 	while ((durationIndex + options.duration) <= (duration)) {
-		await segmentMp3(path.join(baseDirectory, name), path.join(outputDirectory, getSegmentName(name, durationIndex, durationIndex + options.duration)), durationIndex, options.duration);
+        let segmentName = path.join(directory, getSegmentName(name, durationIndex, durationIndex + options.duration));
+        await segmentMp3(videoPath, segmentName, durationIndex, options.duration);
+        files.push(segmentName)
 		durationIndex += options.duration;
 	}
 	if ((duration - durationIndex) >= 30) {
-		await segmentMp3(path.join(baseDirectory, name), path.join(outputDirectory, getSegmentName(name, durationIndex, duration)), durationIndex, (duration - durationIndex));
+        let segmentName = path.join(directory, getSegmentName(name, durationIndex, duration));
+        await segmentMp3(videoPath, segmentName, durationIndex, (duration - durationIndex));
+        files.push(segmentName)
 	}
-
+    return files
 }
 
 
@@ -137,7 +140,7 @@ async function splitTrack(videoPath, directory, duration){
 function getSegmentName(name, start, end) {
 	let ext = path.extname(name);
 	name = path.removeExt(name, ext);
-	return `${name}_${secondsToTimeString(start)}-${secondsToTimeString(end)}.mp3`.replace(/[/\\?%*:|"<>&]/g, '-');
+	return sanitize(`${name}_${secondsToTimeString(start)}-${secondsToTimeString(end)}.mp3`);
 }
 
 
