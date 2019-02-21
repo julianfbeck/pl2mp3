@@ -37,65 +37,27 @@ async function download(dir, config, ytVideo) {
 
 	//sets path variables for ffmpeg
 	await checkffmpeg();
-
+	let videoPath
 	//Download yt videos
 	if (ytdl.validateURL(ytVideo)) {
-		let title = await getVideoTitle(ytVideo);
-		title = sanitize(title) //make sure there are no illeagale characters
-		await downloadVideo(ytVideo, path.join(directory, title + ".mp4"));
+        let title = await getVideoTitle(ytVideo);
+        title = sanitize(title) //make sure there are no illeagale characters
+		videoPath = path.join(directory, title + ".mp4")
+		await downloadVideo(ytVideo, videoPath);
 	}
-    return
-
-
-
-	//get files
-	const fileSpinner = ora(`searching for files...`).start();
-	let files = getFiles(directory);
-	//check if files are media files
-	files = verifyFiles(files);
-	if (typeof files === "undefined" || files.length == 0) {
-		fileSpinner.fail("no file where found inside " + directory)
-		throw "no files where found inside " + directory;
-	}
-	fileSpinner.succeed(`found ${chalk.blue(files.length)} file(s), start splitting...`)
-
-	//rename files
-	files = options.rename ? rename(files) : files;
-	let baseDirectory = path.dirname(files[0]);
-	let outputDirectory = path.join(baseDirectory, "audio");
-
-	//create folders, delete existing files
-	if (!fs.existsSync(outputDirectory))
-		fs.mkdirSync(outputDirectory);
 
 	//Split track
-	for (let item of files) {
-		let seconds = await getFileLength(item);
-		let filename = path.basename(item);
-		await splitTrack(baseDirectory, outputDirectory, filename, Number(seconds));
-	}
-
-	//set metadata name to first file in array if not set
-	if (options.name === "") {
-		let filename = path.basename(files[0])
-		options.name = filename.substr(0, filename.lastIndexOf(".")) || filename;
-	}
-	//take cover picture
-	let cover = "";
-	if (options.cover)
-		coverPath = await getCoverPicture(files[0], baseDirectory, options.startAt);
-
+	let seconds = await getFileLength(videoPath);
+	await splitTrack(videoPath, directory, Number(seconds));
+	
 	//updating meta data
 	if (options.metadata) {
-		const metadataSpinner = ora(`searching for files...`).start();
 		files = fs.readdirSync(outputDirectory);
 		for (let file of files) {
 			await writeMusicMetadata(path.join(outputDirectory, file), options.name, coverPath);
 		}
-		metadataSpinner.succeed(`updated metadata of ${chalk.blue(files.length)} file(s)`);
 	}
 
-	if (options.cover) await deleteFile(coverPath);
 }
 
 
@@ -142,33 +104,26 @@ function segmentMp3(input, output, start, duration) {
  * @param {String} name 
  * @param {Number} duration 
  */
-async function splitTrack(baseDirectory, outputDirectory, name, duration) {
-	let parts = 0;
-	const spinner = ora(`splitting ${name} into ${chalk.blue(parts + 1)} parts`).start();
+async function splitTrack(videoPath, directory, duration){
 
 	//if you dont want seprate clips
 	if (options.full) {
-		let ext = path.extname(name);
-		let newName = path.removeExt(name, ext);
-		await segmentMp3(path.join(baseDirectory, name), path.join(outputDirectory, newName + ".mp3"), 0, duration);
-		spinner.succeed(`Converted ${chalk.blue(newName)} into mp3`);
+        console.log("full")
+		let ext = path.extname(videoPath);
+		let newName = path.removeExt(path.basename(videoPath), ext);
+		await segmentMp3(path.join(videoPath), path.join(directory, newName + ".mp3"), 0, duration);
 		return;
 	}
 
-	let durationIndex = options.startAt;
+	let durationIndex = 0;
 
-	while ((durationIndex + options.duration) <= (duration - options.endAt)) {
-		spinner.text = `splitting ${name} into ${chalk.blue(parts + 1)} parts`;
+	while ((durationIndex + options.duration) <= (duration)) {
 		await segmentMp3(path.join(baseDirectory, name), path.join(outputDirectory, getSegmentName(name, durationIndex, durationIndex + options.duration)), durationIndex, options.duration);
 		durationIndex += options.duration;
-		parts++;
 	}
-	if (((duration - options.endAt) - durationIndex) >= 30) {
-		spinner.text = `splitting ${name} into ${chalk.blue(parts + 1)} parts`;
-		await segmentMp3(path.join(baseDirectory, name), path.join(outputDirectory, getSegmentName(name, durationIndex, duration - options.endAt)), durationIndex, ((duration - options.endAt) - durationIndex));
-		parts++;
+	if ((duration - durationIndex) >= 30) {
+		await segmentMp3(path.join(baseDirectory, name), path.join(outputDirectory, getSegmentName(name, durationIndex, duration)), durationIndex, (duration - durationIndex));
 	}
-	spinner.succeed(`splitted ${name} into ${chalk.blue(parts)} parts`);
 
 }
 

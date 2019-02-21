@@ -51,7 +51,7 @@ async function checkforNewVideos(playlist) {
 
 	let listInfo = await pl.getPlaylistInformation(playlist, 9999);
 	let newVideos = listInfo.items.map(obj => {
-		return obj.url
+		return obj.url_simple
 	})
 	return newVideos.filter(v => {
 		return !dlVideos.includes(v);
@@ -64,7 +64,7 @@ async function getPlaylistPath(base, playlist) {
 }
 async function addVideo(playlist,link){
 	db.get("playlists").find({link: playlist})
-		.get("videos").push("link")
+		.get("videos").push(link).write()
 }
 module.exports.checkVideos = checkforNewVideos;
 module.exports.prepare = prepare;

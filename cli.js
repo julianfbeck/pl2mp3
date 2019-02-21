@@ -20,6 +20,7 @@ async function update() {
 	 */
 	for (const playlist of config.playlists) {
 		let toDownload = await db.checkVideos(playlist.link)
+		console.log(toDownload)
 		let playlistDir = await db.getPlaylistPath(basePath, playlist.link)
 
 		for (const video of toDownload) {
