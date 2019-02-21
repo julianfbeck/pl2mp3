@@ -31,10 +31,8 @@ const cli = meow(`
 });
 
 
-const basePath = "./test"
-
 async function update() {
-	let rawdata = fs.readFileSync("test/config.json");
+	let rawdata = fs.readFileSync(path.join(basePath, "config.json"));
 	let config = JSON.parse(rawdata);
 	/**
 	 * Loop through each playlist
@@ -60,13 +58,15 @@ async function update() {
 		console.log("Pleace specify a path")
 		return
 	}
+	let basePath = cli.input[0];
+
 	if (cli.flags.init) {
 		init(cli.input[0]);
 	}
-	
-	let rawdata = fs.readFileSync("test/config.json");
+
+	let rawdata = fs.readFileSync(path.join(basePath, "config.json"));
 	let config = JSON.parse(rawdata);
 	db.init(path.join(basePath, "db.json"));
-	await db.prepare(config)
-	await update()
+	await db.prepare(basePath, config)
+	await update(basePath)
 })();

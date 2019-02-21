@@ -10,36 +10,30 @@ function init(dbPath) {
 	adapter = new FileSync(dbPath);
 	db = low(adapter);
 }
+
 /**
  * check database and folders
  */
-async function prepare(config) {
-	//check if playlist exisitstiert
+async function prepare(basePath, config) {
+	//check if playlist exists
 	if (!db.has("playlists").value()) db.set("playlists", []).write();
 	//check if there is a object for each array
 	for (const playlist of config.playlists) {
 		//playlist doesnt exist
-		if (
-			db
-			.get("playlists")
-			.find({
-				link: playlist.link,
-			})
-			.isEmpty()
-			.value()
-		) {
+		if (db.get("playlists").find({
+				link: playlist.link
+			}).isEmpty().value()) {
 			let title = await pl.getPlaylistInformation(playlist.link, 1);
 			db.get("playlists")
 				.push({
 					link: playlist.link,
 					title: title.title,
 					videos: [],
-				})
-				.write();
-			if (!fs.existsSync(path.join("test/", title.title))) {
-				fs.mkdirSync(path.join("test/", title.title));
-			}
+				}).write();
 
+			if (!fs.existsSync(path.join(basePath, title.title))) {
+				fs.mkdirSync(path.join(basePath, title.title));
+			}
 		}
 	}
 }
@@ -62,8 +56,10 @@ async function getPlaylistPath(base, playlist) {
 		link: playlist
 	}).get("title").value())
 }
-async function addVideo(playlist,link){
-	db.get("playlists").find({link: playlist})
+async function addVideo(playlist, link) {
+	db.get("playlists").find({
+			link: playlist
+		})
 		.get("videos").push(link).write()
 }
 module.exports.checkVideos = checkforNewVideos;
