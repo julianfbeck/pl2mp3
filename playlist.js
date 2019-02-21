@@ -11,7 +11,6 @@ function getPlaylist(url,limit) {
         ytpl(url,{limit:limit}, function(err, playlist) {
             if(err) throw reject(err);
             resolve(playlist)
-
           });
     });
 }

@@ -1,10 +1,6 @@
 #!/usr/bin/env node
 
-const program = require("commander");
 const dl = require("./download");
-const chalk = require("chalk");
-const notifier = require('node-notifier');
-const interactive = require("./interactive");
 const db = require("./db")
 const fs = require("fs")
 const path = require("upath")

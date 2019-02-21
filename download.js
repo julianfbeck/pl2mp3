@@ -51,11 +51,12 @@ async function download(dir, config, ytVideo) {
 	//updating meta data
 	if (options.metadata) {
 		for (let file of files) {
-            let ext = path.extname(file);
-            let name = path.removeExt(path.basename(file), ext);
-			await writeMusicMetadata(file, name);
+            let ext = path.extname(directory);
+            let name = path.removeExt(path.basename(directory), ext);
+			await writeMusicMetadata(directory, name);
 		}
-	}
+    }
+    await deleteFile(videoPath)
 
 }
 
