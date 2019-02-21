@@ -50,9 +50,10 @@ async function download(dir, config, ytVideo) {
 	
 	//updating meta data
 	if (options.metadata) {
-		files = fs.readdirSync(outputDirectory);
 		for (let file of files) {
-			await writeMusicMetadata(path.join(outputDirectory, file), options.name, coverPath);
+            let ext = path.extname(file);
+            let name = path.removeExt(path.basename(file), ext);
+			await writeMusicMetadata(file, name);
 		}
 	}
 
@@ -192,26 +193,21 @@ function getFileLength(file) {
  * Writes music meta data and cover to the given file
  * Also sets disc:1 to join all mp3 files into one copilation
  * @param {String} file 
- * @param {String} compilationName 
+ * @param {String} playlistName 
  * @param {String} cover 
  */
-function writeMusicMetadata(file, compilationName, cover) {
+function writeMusicMetadata(file, playlistName) {
 	return new Promise((resolve, reject) => {
 
 		let isodate = new Date();
 		let data = {
-			artist: compilationName,
-			genre: "speech",
 			disc: 1,
-			album: compilationName,
+			album: playlistName,
 			date: isodate
 		};
 
-		let attachments = options.cover ? {
-			attachments: [cover]
-		} : {};
 
-		ffmetadata.write(file, data, attachments, function (err) {
+		ffmetadata.write(file, data, {}, function (err) {
 			if (err) reject(err);
 			resolve();
 		});
