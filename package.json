@@ -25,6 +25,7 @@
     "inquirer": "^6.0.0",
     "is-url": "^1.2.4",
     "lowdb": "^1.0.0",
+    "meow": "^5.0.0",
     "node-ffprobe": "github:ListenerApproved/node-ffprobe",
     "node-notifier": "^5.2.1",
     "node-podcast-parser": "^2.3.0",
