@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-
 const dl = require("./download");
 const db = require("./db")
 const fs = require("fs")
@@ -9,7 +8,7 @@ const meow = require('meow');
 
 const cli = meow(`
 	Usage
-	  $ myapp <input>
+	  $ myapp <Download Directory>
 
 	Options
 	  --init, -i  create new Directory
@@ -31,7 +30,7 @@ const cli = meow(`
 });
 
 
-async function update() {
+async function update(basePath) {
 	let rawdata = fs.readFileSync(path.join(basePath, "config.json"));
 	let config = JSON.parse(rawdata);
 	/**
@@ -41,7 +40,11 @@ async function update() {
 		let toDownload = await db.checkVideos(playlist.link)
 		console.log(toDownload)
 		let playlistDir = await db.getPlaylistPath(basePath, playlist.link)
-
+		console.log(playlistDir)
+		if(!fs.existsSync(playlistDir)){
+			console.log(`Creating ${playlistDir} directory`)
+			fs.mkdirSync(playlistDir)
+		}
 		for (const video of toDownload) {
 			let result = await dl.download(playlistDir, playlist, video)
 			db.addVideo(playlist.link, video)
@@ -54,12 +57,12 @@ async function update() {
  */
 (async () => {
 	console.log(cli.input[0], cli.flags)
-	if (cli.input[0] === undefined) {
-		console.log("Pleace specify a path")
-		return
-	}
-	let basePath = cli.input[0];
 
+	let basePath = cli.input[0];
+	if(cli.input[0] === undefined){
+		console.log("Please specify a download Directory");
+        cli.showHelp();
+	}
 	if (cli.flags.init) {
 		init(cli.input[0]);
 	}

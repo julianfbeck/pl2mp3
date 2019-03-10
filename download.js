@@ -26,8 +26,8 @@ async function download(dir, config, ytVideo) {
 	//set default value when calling as a module
 	options = Object.assign({
 		duration: 180,
-        full: true,
-        metadata:true
+		full: true,
+		metadata: true
 	}, config);
 
 	//parse time stamps to seconds
@@ -38,8 +38,8 @@ async function download(dir, config, ytVideo) {
 	let videoPath
 	//Download yt videos
 	if (ytdl.validateURL(ytVideo)) {
-        let title = await getVideoTitle(ytVideo);
-        title = sanitize(title) //make sure there are no illeagale characters
+		let title = await getVideoTitle(ytVideo);
+		title = sanitize(title) //make sure there are no illeagale characters
 		videoPath = path.join(directory, title + ".mp4")
 		await downloadVideo(ytVideo, videoPath);
 	}
@@ -47,17 +47,16 @@ async function download(dir, config, ytVideo) {
 	//Split track
 	let seconds = await getFileLength(videoPath);
 	let files = await splitTrack(videoPath, directory, Number(seconds));
-	
+
 	//updating meta data
 	if (options.metadata) {
 		for (let file of files) {
-            let ext = path.extname(directory);
-            let name = path.removeExt(path.basename(directory), ext);
-			await writeMusicMetadata(directory, name);
+			let ext = path.extname(directory);
+			let name = path.removeExt(path.basename(directory), ext);
+			await writeMusicMetadata(file, name);
 		}
-    }
-    await deleteFile(videoPath)
-
+	}
+	await deleteFile(videoPath)
 }
 
 
@@ -91,7 +90,8 @@ function segmentMp3(input, output, start, duration) {
 				resolve();
 			}).on('error', function (err, stdout, stderr) {
 				reject('Cannot process video: ' + err.message);
-			});
+			})
+
 	});
 };
 
@@ -104,32 +104,32 @@ function segmentMp3(input, output, start, duration) {
  * @param {String} name 
  * @param {Number} duration 
  */
-async function splitTrack(videoPath, directory, duration){
-    let ext = path.extname(videoPath);
-    let name = path.removeExt(path.basename(videoPath), ext);
-    let files =[]
+async function splitTrack(videoPath, directory, duration) {
+	let ext = path.extname(videoPath);
+	let name = path.removeExt(path.basename(videoPath), ext);
+	let files = []
 	//if you dont want seprate clips
 	if (options.full) {
-        let newName = path.join(directory, sanitize(name) + ".mp3")
-        await segmentMp3(videoPath, newName, 0, duration);
-        files.push(newName)
+		let newName = path.join(directory, sanitize(name) + ".mp3")
+		await segmentMp3(videoPath, newName, 0, duration);
+		files.push(newName)
 		return files;
 	}
 
 	let durationIndex = 0;
 
 	while ((durationIndex + options.duration) <= (duration)) {
-        let segmentName = path.join(directory, getSegmentName(name, durationIndex, durationIndex + options.duration));
-        await segmentMp3(videoPath, segmentName, durationIndex, options.duration);
-        files.push(segmentName)
+		let segmentName = path.join(directory, getSegmentName(name, durationIndex, durationIndex + options.duration));
+		await segmentMp3(videoPath, segmentName, durationIndex, options.duration);
+		files.push(segmentName)
 		durationIndex += options.duration;
 	}
 	if ((duration - durationIndex) >= 30) {
-        let segmentName = path.join(directory, getSegmentName(name, durationIndex, duration));
-        await segmentMp3(videoPath, segmentName, durationIndex, (duration - durationIndex));
-        files.push(segmentName)
+		let segmentName = path.join(directory, getSegmentName(name, durationIndex, duration));
+		await segmentMp3(videoPath, segmentName, durationIndex, (duration - durationIndex));
+		files.push(segmentName)
 	}
-    return files
+	return files
 }
 
 
