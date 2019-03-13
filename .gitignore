@@ -1,6 +1,6 @@
 node_modules
 ffmpeg
 testfolder
-test
+test/
 *.mp3
 *.mp4
