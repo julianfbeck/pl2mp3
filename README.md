@@ -1,10 +1,10 @@
 
-# VITOMUCI [![npm version](https://badge.fury.io/js/vitomuci.svg)](https://badge.fury.io/js/vitomuci) [![Build Status](https://travis-ci.org/jufabeck2202/vitomuci.svg?branch=master)](https://travis-ci.org/jufabeck2202/vitomuci)
+# VITOMUCI [![npm version](https://badge.fury.io/js/pl2mp3.svg)](https://badge.fury.io/js/pl2mp3) 
 <p >
   <img width="700" src="https://rawgit.com/jufabeck2202/vitomuci/master/screenshot.svg">
 </p>
 
-**Vitomuci** is a video to mp3 converter that splits the video file into small audio clips and combines them into one album with a generated cover. Besides downloading local videos, it allso suports downloading YouTube videos, YouTube Playlists and Podcasts from an Podcast RSS feed.
+**pl2mp3** is a video to mp3 converter that splits the video file into small audio clips and combines them into one album with a generated cover. Besides downloading local videos, it allso suports downloading YouTube videos, YouTube Playlists and Podcasts from an Podcast RSS feed.
 It is inspired by the [sub2srs](http://subs2srs.sourceforge.net/#extract_audio) extract Audio from Media Tool.
 ## Pros and cons of Vitomuci compared to sub2srs audio extraction tool
 ### Pros:
