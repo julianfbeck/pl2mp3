@@ -5,7 +5,6 @@ const ffmpeg = require("fluent-ffmpeg");
 const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
 const ffprobePath = require("@ffprobe-installer/ffprobe").path;
 const ytdl = require("ytdl-core");
-const chalk = require("chalk");
 const sanitize = require("sanitize-filename");
 
 
