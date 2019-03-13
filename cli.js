@@ -1,12 +1,16 @@
 #!/usr/bin/env node
+
 const dl = require("./download");
 const db = require("./db")
-const fs = require("fs")
 const init = require("./init")
 const reset = require("./reset")
+const fs = require("fs")
+const pkg = require('./package.json');
 
+const ora = require('ora');
 const path = require("upath")
 const meow = require('meow');
+const updateNotifier = require('update-notifier');
 
 const cli = meow(`
 	Usage
@@ -35,38 +39,50 @@ const cli = meow(`
 		}
 	}
 });
-
+let downloading = false;
 
 async function update(basePath) {
+	downloading = true;
 	let rawdata = fs.readFileSync(path.join(basePath, "config.json"));
 	let config = JSON.parse(rawdata);
 	/**
 	 * Loop through each playlist
 	 */
+
 	for (const playlist of config.playlists) {
 		let toDownload = await db.checkVideos(playlist.link)
-		console.log(toDownload)
-		let playlistDir = await db.getPlaylistPath(basePath, playlist.link)
-		console.log(playlistDir)
-		if(!fs.existsSync(playlistDir)){
-			console.log(`Creating ${playlistDir} directory`)
-			fs.mkdirSync(playlistDir)
-		}
-		for (const video of toDownload) {
-			let result = await dl.download(playlistDir, playlist, video)
-			db.addVideo(playlist.link, video)
+		if (toDownload.length != 0) {
+
+			const spinner = ora(`Downloading Videos to ${basePath}`).start();
+			let playlistDir = await db.getPlaylistPath(basePath, playlist.link)
+			if (!fs.existsSync(playlistDir)) {
+				fs.mkdirSync(playlistDir)
+			}
+			let i = 1;
+			for (const video of toDownload) {
+				spinner.text = `Downloading ${i}/${toDownload.length} Videos to ${playlistDir}`
+				await dl.download(playlistDir, playlist, video)
+				db.addVideo(playlist.link, video)
+				i++
+
+			}
+			spinner.succeed(`Finished Downloading ${toDownload.length} Videos to ${playlistDir}`)
 		}
 	}
+	downloading = false;
 }
 
 /**
  * call vitomuci, pass over args, opions and argv
  */
 (async () => {
+	updateNotifier({
+		pkg
+	}).notify();
 	let basePath = cli.input[0];
-	if(cli.input[0] === undefined){
+	if (cli.input[0] === undefined) {
 		console.log("Please specify a download Directory");
-        cli.showHelp();
+		cli.showHelp();
 	}
 	if (cli.flags.init) {
 		init(cli.input[0]);
@@ -78,10 +94,17 @@ async function update(basePath) {
 		console.log("Run pl2mp3 <directory> to start watching")
 		return
 	}
-
+	let updateTime = cli.flags.update || "10:00";
+	updateTime = dl.stringToSeconds(updateTime)
 	let rawdata = fs.readFileSync(path.join(basePath, "config.json"));
 	let config = JSON.parse(rawdata);
 	db.init(path.join(basePath, "db.json"));
 	await db.prepare(basePath, config)
 	await update(basePath)
+	setInterval(async () => {
+		if (downloading) {
+			return
+		}
+		await update(basePath)
+	}, updateTime * 1000);
 })();

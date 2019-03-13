@@ -70,7 +70,6 @@ function checkffmpeg() {
 	process.env.FFMPEG_PATH = ffmpegPath;
 	ffprobe.FFPROBE_PATH = ffprobePath;
 	ffmetadata = require("ffmetadata");
-	console.log(chalk.grey("ffmpeg installed at:" + ffmpegPath));
 	return ffmpegPath;
 }
 
@@ -262,3 +261,4 @@ async function getVideoTitle(url) {
 
 
 module.exports.download = download;
+module.exports.stringToSeconds = stringToSeconds
