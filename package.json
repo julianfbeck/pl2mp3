@@ -22,7 +22,7 @@
     "file-exists": "^5.0.1",
     "fluent-ffmpeg": "^2.1.2",
     "glob": "^7.1.2",
-    "inquirer": "^6.0.0",
+    "inquirer": "^6.2.2",
     "is-url": "^1.2.4",
     "lowdb": "^1.0.0",
     "meow": "^5.0.0",

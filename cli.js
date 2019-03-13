@@ -3,6 +3,8 @@ const dl = require("./download");
 const db = require("./db")
 const fs = require("fs")
 const init = require("./init")
+const reset = require("./reset")
+
 const path = require("upath")
 const meow = require('meow');
 
@@ -12,7 +14,8 @@ const cli = meow(`
 
 	Options
 	  --init, -i  create new Directory
-	  --update <mins>, -u <min>	 update every <min> mins
+	  --update <mins>, -u <min>	 check for playlist updates every <min> mins
+	  --reset, -r resets database, removes downloaded videos
 
 	Examples
 	  $ myapp unicorns --init
@@ -21,6 +24,10 @@ const cli = meow(`
 		init: {
 			type: 'boolean',
 			alias: 'i'
+		},
+		reset: {
+			type: 'boolean',
+			alias: 'r'
 		},
 		update: {
 			type: 'string',
@@ -56,8 +63,6 @@ async function update(basePath) {
  * call vitomuci, pass over args, opions and argv
  */
 (async () => {
-	console.log(cli.input[0], cli.flags)
-
 	let basePath = cli.input[0];
 	if(cli.input[0] === undefined){
 		console.log("Please specify a download Directory");
@@ -65,6 +70,13 @@ async function update(basePath) {
 	}
 	if (cli.flags.init) {
 		init(cli.input[0]);
+		console.log("Run pl2mp3 <directory> to start watching")
+		return
+	}
+	if (cli.flags.reset) {
+		await reset(cli.input[0]);
+		console.log("Run pl2mp3 <directory> to start watching")
+		return
 	}
 
 	let rawdata = fs.readFileSync(path.join(basePath, "config.json"));

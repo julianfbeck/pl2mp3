@@ -7,11 +7,10 @@ module.exports = (basePath) => {
 	console.log(`Creating new installation at ${basePath}`)
 	let dbPath = path.join(basePath, db)
 	let configPath = path.join(basePath, config)
-	if (!fs.existsSync(dbPath) && !fs.existsSync(configPath)) {
-		fs.openSync(dbPath, 'w');
+	if (!fs.existsSync(configPath)) {
 		fs.copyFileSync("sampleConfig.json", configPath)
-	} else {
-		console.log("Files already exist,")
 	}
-
+	if (!fs.existsSync(dbPath)) {
+		fs.openSync(dbPath, 'w');
+	}
 }
