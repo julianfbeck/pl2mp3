@@ -1,15 +1,14 @@
 {
-  "name": "vitomuci",
+  "name": "pl2mp3",
   "version": "2.2.1",
-  "description": "download youtube videos or convert videos to mp3 and split them into short clips",
-  "main": "vitomuci.js",
+  "description": "Watch Youtube Playlists and automatically download & convert Videos to mp3",
+  "main": "cli.js",
   "directories": {
     "doc": "doc"
   },
   "scripts": {
-    "test": "mocha"
   },
-  "author": "",
+  "author": "Julian Beck",
   "license": "ISC",
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.0.15",
@@ -32,31 +31,29 @@
   "files": [
     "README.md",
     "cli.js",
-    "vitomuci.js",
-    "interactive.js"
+    "db.js",
+    "download.js",
+    "init.js",
+    "reset.js",
+    "playlist.js",
+    "sampleConfig.json"
   ],
   "keywords": [
-    "language",
-    "mp4tomp3",
-    "clips",
-    "music clips",
-    "audio clips",
-    "sub2srs",
-    "spit audio"
+    "Youtube",
+    "Youtube Playlist",
+    "Watcher",
+    "Automatic",
+    "to Mp3",
+    "Playlist to Mp3",
+    "split audio"
   ],
   "preferGlobal": true,
   "bin": {
-    "vitomuci": "./cli.js"
+    "pl2mp3": "./cli.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jufabeck2202/vitomuci"
+    "url": "https://github.com/jufabeck2202/pl2mp3"
   },
-  "homepage": "https://github.com/jufabeck2202/vitomuci#readme",
-  "devDependencies": {
-    "chai": "^4.1.2",
-    "command-line-test": "^1.0.10",
-    "mocha": "^5.2.0",
-    "rimraf": "^2.6.2"
-  }
+  "homepage": "https://github.com/jufabeck2202/pl2mp3#readme"
 }
