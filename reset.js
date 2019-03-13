@@ -16,6 +16,5 @@ module.exports = async (basePath) => {
         fs.unlinkSync(path.join(basePath,db))
         console.log("Database has been reset")
         init(basePath)
-
 	}
 }
