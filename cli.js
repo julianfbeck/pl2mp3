@@ -11,7 +11,8 @@ const ora = require('ora');
 const path = require("upath")
 const meow = require('meow');
 const updateNotifier = require('update-notifier');
-
+const configFile = "config.json"
+const dbFile = "db.json"
 const cli = meow(`
 	Usage
 	  $ myapp <Download Directory>
@@ -66,7 +67,6 @@ async function update(basePath) {
 				await dl.download(playlistDir, playlist, video)
 				db.addVideo(playlist.link, video)
 				i++
-
 			}
 			spinner.succeed(`Finished Downloading ${toDownload.length} Videos to ${playlistDir}`)
 		}
@@ -85,7 +85,14 @@ async function update(basePath) {
 	if (cli.input[0] === undefined) {
 		console.log("Please specify a download Directory");
 		cli.showHelp();
+		return
 	}
+	if (!fs.existsSync(path.join(basePath, configFile))|| !fs.existsSync(path.join(basePath,dbFile))){
+		console.log("config.json and db.json missing. Please use the --init option to create a new download directory.")
+		cli.showHelp();
+		return
+	}
+	
 	if (cli.flags.init) {
 		init(cli.input[0]);
 		console.log("Run pl2mp3 <directory> to start watching")
