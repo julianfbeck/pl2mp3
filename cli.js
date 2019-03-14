@@ -18,11 +18,13 @@ const cli = meow(`
 
 	Options
 	  --init, -i  create new Directory
-	  --update <mins>, -u <min>	 check for playlist updates every <min> mins
+	  --update <mins>, -u <min>	check for playlist updates every <min> mins. Default 10min
 	  --reset, -r resets database, removes downloaded videos
 
 	Examples
-	  $ myapp unicorns --init
+	  $ pl2mp3 --init <Download Directory> // to create a new Directory
+	  $ pl2mp3 <Download Directory> // to start watching 
+	  $ pl2mp3 -update 20 <Download Directory> // to watch every 20min for changes.
 `, {
 	flags: {
 		init: {
@@ -94,8 +96,7 @@ async function update(basePath) {
 		console.log("Run pl2mp3 <directory> to start watching")
 		return
 	}
-	let updateTime = cli.flags.update || "10:00";
-	updateTime = dl.stringToSeconds(updateTime)
+	let updateTime = cli.flags.update || 10;
 	let rawdata = fs.readFileSync(path.join(basePath, "config.json"));
 	let config = JSON.parse(rawdata);
 	db.init(path.join(basePath, "db.json"));
@@ -106,5 +107,5 @@ async function update(basePath) {
 			return
 		}
 		await update(basePath)
-	}, updateTime * 1000);
+	}, updateTime * 60 * 1000);
 })();
