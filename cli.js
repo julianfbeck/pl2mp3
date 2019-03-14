@@ -58,7 +58,7 @@ async function update(basePath) {
 			const spinner = ora(`Downloading Videos to ${basePath}`).start();
 			let playlistDir = await db.getPlaylistPath(basePath, playlist.link)
 			if (!fs.existsSync(playlistDir)) {
-				fs.mkdirSync(playlistDir)
+				fs.mkdirSync(sanatize(playlistDir))
 			}
 			let i = 1;
 			for (const video of toDownload) {
