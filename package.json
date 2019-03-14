@@ -1,13 +1,12 @@
 {
   "name": "pl2mp3",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Watches Youtube Playlists and automatically downloads & converts them to mp3",
   "main": "cli.js",
   "directories": {
     "doc": "doc"
   },
-  "scripts": {
-  },
+  "scripts": {},
   "author": "Julian Beck",
   "license": "ISC",
   "dependencies": {
