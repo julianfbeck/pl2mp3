@@ -6,7 +6,7 @@ const init = require("./init")
 const reset = require("./reset")
 const fs = require("fs")
 const pkg = require('./package.json');
-
+const sanitize = require("sanitize-filename");
 const ora = require('ora');
 const path = require("upath")
 const meow = require('meow');
@@ -58,7 +58,7 @@ async function update(basePath) {
 			const spinner = ora(`Downloading Videos to ${basePath}`).start();
 			let playlistDir = await db.getPlaylistPath(basePath, playlist.link)
 			if (!fs.existsSync(playlistDir)) {
-				fs.mkdirSync(sanatize(playlistDir))
+				fs.mkdirSync(sanitize(playlistDir))
 			}
 			let i = 1;
 			for (const video of toDownload) {

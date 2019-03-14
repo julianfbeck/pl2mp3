@@ -3,6 +3,8 @@ const FileSync = require("lowdb/adapters/FileSync");
 const fs = require("fs");
 const pl = require("./playlist");
 const path = require("upath")
+const sanitize = require("sanitize-filename");
+
 let db
 let adapter
 
@@ -27,12 +29,12 @@ async function prepare(basePath, config) {
 			db.get("playlists")
 				.push({
 					link: playlist.link,
-					title: title.title,
+					title: sanitize(title.title),
 					videos: [],
 				}).write();
 
-			if (!fs.existsSync(path.join(basePath, title.title))) {
-				fs.mkdirSync(path.join(basePath, title.title));
+			if (!fs.existsSync(path.join(basePath, sanitize(title.title)))) {
+				fs.mkdirSync(path.join(basePath, sanitize(title.title)));
 			}
 		}
 	}

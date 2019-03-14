@@ -10,7 +10,7 @@ module.exports = (basePath) => {
 	let configPath = path.join(basePath, config)
 
 	if (!fs.existsSync(basePath))
-		fs.mkdirSync(sanatize(basePath))
+		fs.mkdirSync(sanitize(basePath))
 	if (!fs.existsSync(configPath))
 		fs.copyFileSync("sampleConfig.json", configPath)
 	if (!fs.existsSync(dbPath))
