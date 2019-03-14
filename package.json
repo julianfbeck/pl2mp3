@@ -1,7 +1,7 @@
 {
   "name": "pl2mp3",
   "version": "2.2.1",
-  "description": "Watch Youtube Playlists and automatically download & convert Videos to mp3",
+  "description": "Watches Youtube Playlists and automatically downloads & converts them to mp3",
   "main": "cli.js",
   "directories": {
     "doc": "doc"

@@ -1,7 +1,7 @@
 
-# pl2mp3  [![npm version](https://badge.fury.io/js/pl2mp3 .svg)](https://badge.fury.io/js/pl2mp3 )
+# pl2mp3  [![npm version](https://badge.fury.io/js/pl2mp3.svg)](https://badge.fury.io/js/pl2mp3)
 
->  Watches YouTube Playlists and automatically download and convert videos to mp3
+> 👀 Watches Youtube Playlists and automatically downloads & converts them to mp3
 
 **pl2mp3** will watch multiple YT playlists to download newly added videos and convert them to MP3. Ideal for music or podcast playlists.
 
@@ -27,17 +27,17 @@ Examples
 ```
 ## Setup:
 ### Setup Download folder:
-* In order to use **pl2mp3** you first have to create a download Directory. This Directory will be used by pl2mp3 to download and convert new videos. Run following command to create a new download Directory
+* In order to use **pl2mp3**, you first have to create a download Directory. This Directory will be used by pl2mp3 to download and convert new videos. Run the following command to create a new download Directory
 
 ```shell
 pl2mp3 --init <Directory name>
 ```
 * This will create a new directory with a *db.json* file and a *config.json* file.
 ### Setup config.json:
-* After runing the --init command, **pl2mp3** created a *config.json* file. The *config.json* file is used to specify the playlists you want to download and other options.
+* After running the `--init` command, **pl2mp3** created a *config.json* file. The *config.json* file is used to specify the playlists you want to download and other options.
 * When adding new playlists to the config.json, make sure that the Youtube playlists are **public**.
 #### Sample config:
-* Following config will download and watch two Playlists.
+* The following config will download and watch two Playlists.
 ```json
 {
   "playlists": [
@@ -65,13 +65,13 @@ pl2mp3 --init <Directory name>
 ```
 *This will split every mp3 file into 3 min clips, with proper names.
 
-### Start pl2mp3
-* After creating a Download Directory and customizing the config.json you can start **pl2mp3**. Run following command to start watching:
+### Start pl2mp3:
+* After creating a Download Directory and customizing the config.json you can start **pl2mp3** with the following command:
 ```shell
 pl2mp3 <Directory name>
 ```
-* **pl2mp3** will create a seperate folder for each playlist and will start downloading and converting all videos inside the playlists. 
+* **pl2mp3** will create a separate folder for each playlist and will start downloading and converting all videos inside the playlists. 
 * After that **pl2mp3** will look every 10 min for newly added videos to download them too. You can change the time by using the `--update <min>` flag.
 
-## About
+## About:
 ICS © [Julian Beck](https://github.com/jufabeck2202)
