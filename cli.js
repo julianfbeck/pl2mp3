@@ -15,7 +15,7 @@ const configFile = "config.json"
 const dbFile = "db.json"
 const cli = meow(`
 	Usage
-	  $ myapp <Download Directory>
+	  $ pl2mp3 <Download Directory>
 
 	Options
 	  --init, -i  create new Directory
