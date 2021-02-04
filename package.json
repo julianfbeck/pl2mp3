@@ -19,7 +19,7 @@
     "lowdb": "^1.0.0",
     "meow": "^5.0.0",
     "node-ffprobe": "github:ListenerApproved/node-ffprobe",
-    "node-notifier": "^5.2.1",
+    "node-notifier": "^8.0.1",
     "ora": "^3.2.0",
     "sanitize-filename": "^1.6.1",
     "upath": "^1.1.0",
